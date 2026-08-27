@@ -1,4 +1,9 @@
+import sys
 import os
+
+# Ensure current directory is at top of sys.path for Vercel Serverless
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import re
 import hmac
 import hashlib
@@ -34,11 +39,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ensure directories exist
-QUARANTINE_DIR = "uploads/quarantine"
-os.makedirs(QUARANTINE_DIR, exist_ok=True)
-os.makedirs("static/decoy", exist_ok=True)
-os.makedirs("logs", exist_ok=True)
+# Ensure directories exist (serverless safe)
+QUARANTINE_DIR = "/tmp/uploads/quarantine" if os.getenv("VERCEL") else "uploads/quarantine"
+try:
+    os.makedirs(QUARANTINE_DIR, exist_ok=True)
+    os.makedirs("static/decoy", exist_ok=True)
+    os.makedirs("logs", exist_ok=True)
+except Exception:
+    pass
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
