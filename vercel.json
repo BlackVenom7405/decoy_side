@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "app_decoy.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app_decoy.py"
+    }
+  ]
+}
